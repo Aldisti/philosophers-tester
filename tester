@@ -1,0 +1,230 @@
+#!/bin/sh
+
+ft_check_executables()
+{
+	# check executables existence
+	if ! [ -e $P ]
+	then
+		echo "'$P' executable not found"
+		echo "Try with 'make -C ../philo'"
+		exit 1
+	elif [ $1 -eq 1 ] && ! [ -e $PB ]
+	then
+		echo "'$PB' executable not found"
+		echo "Try with 'make -C ../philo_bonus'"
+		exit 1
+	fi
+	# check executables permissions
+	if [ "$(uname)" = "Linux" ] && ! [ $(stat -c %A $P | tr -cd x | wc -c) -eq 3 ]
+	then
+		echo "'$P' executable must have execution permissions"
+		echo "Try with 'chmod +x $P'"
+		exit 1
+	elif [ $1 -eq 1 ] && [ "$(uname)" = "Linux" ] && ! [ $(stat -c %A $PB | tr -cd x | wc -c) -eq 3 ]
+	then
+		echo "'$PB' executable must have execution permissions"
+		echo "Try with 'chmod +x $PB'"
+		exit 1
+	elif ! [ "$(uname)" = "Linux" ] && ! [ $(stat $P | awk '{print $3}' | tr -cd x | wc -c) -eq 3 ]
+	then
+		echo "'$P' executable must have execution permissions"
+		echo "Try with 'chmod +x $P'"
+		exit 1
+	elif [ $1 -eq 1 ] && ! [ "$(uname)" = "Linux" ] && ! [ $(stat $PB | awk '{print $3}' | tr -cd x | wc -c) -eq 3 ]
+	then
+		echo "'$PB' executable must have execution permissions"
+		echo "Try with 'chmod +x $PB'"
+		exit 1
+	fi
+}
+
+# $1 == TEST number
+# $2 == Success or Failed (1 for success && 0 for fail)
+ft_print_status()
+{
+	if [ $2 -eq 1 ]; then
+		echo "$PURPLE TEST $1:$GREEN Success!$RESET"
+	elif [ $2 -eq 0 ]; then
+		echo "$PURPLE TEST $1:$RED Fail!$RESET"
+	else
+		echo "Error at ft_print_status with [$1] [$2] as input"
+	fi
+}
+
+ft_test_one()
+{
+	file="./log1"
+	status=1
+	($P 4 410 200 200 3 1>$file)&
+	sleep 3
+	pid=$(pgrep philo)
+	if ! [ "$pid" = "" ]; then
+		kill -kill $pid
+	fi
+	for i in $(seq 1 4); do
+		eat_times=$(grep "$i is eating" $file | wc -l | awk '{print $1}')
+		if [ "$eat_times" -lt 3 ]; then
+			status=0
+		fi
+	done
+	if [ $status -eq 1 ]; then
+		rm $file 2>/dev/null
+	fi
+	ft_print_status 1 $status
+}
+
+ft_test_two()
+{
+	file="./log2"
+	status=0
+	($P 4 310 200 100 1>$file)&
+	sleep 3
+	pid=$(pgrep philo)
+	if ! [ "$pid" = "" ]; then
+		kill -kill $pid
+	fi
+	if [ "$(grep 'died' $file | wc -l | awk '{print $1}')" = 1 ]; then
+		status=1
+	fi
+	if [ $status -eq 1 ]; then
+		rm $file 2>/dev/null
+	fi
+	ft_print_status 2 $status
+}
+
+ft_test_three()
+{
+	file="./log3"
+	status=1
+	i=0
+	($P 5 610 200 200 1>$file)&
+	echo "$CYAN Executing your program for 120 seconds, please wait...$RESET"
+	while [ $i -lt 120 ]; do
+		sleep 1
+		i=$((i + 1))
+		if [ "$(pgrep philo)" = "" ]; then
+			status=0
+			break
+		fi
+	done
+	kill -kill $(pgrep philo) 2>/dev/null
+	echo "time: $(cat $file | tail -1 | awk '{print $1}')"
+	if ! [ "$(grep 'died' $file)" = "" ] || [ $(cat $file | tail -1 | awk '{print $1}') -lt 27500 ]; then
+		status=0
+	fi
+	if [ $status -eq 1 ]; then
+		rm $file 2>/dev/null
+	fi
+	ft_print_status 3 $status
+}
+
+ft_test_four()
+{
+	file="./log4"
+	status=1
+	($P 5 800 200 200 5 1>$file)&
+	sleep 3
+	pid=$(pgrep philo)
+	if ! [ "$pid" = "" ]; then
+		kill -kill $pid
+	fi
+	for i in $(seq 1 4); do
+		eat_times=$(cat $file | grep "$i is eating" | wc -l | awk '{print $1}')
+		if [ "$eat_times" -lt 5 ]; then
+			status=0
+		fi
+	done
+	if [ $status -eq 1 ]; then
+		rm $file 2>/dev/null
+	fi
+	ft_print_status 4 $status
+}
+
+ft_mandatory()
+{
+	ft_test_one
+	ft_test_two
+	ft_test_three
+}
+
+ft_bonus()
+{
+	echo "do bonus"
+}
+
+P="./../philo"
+PB="./../philo_bonus/philo_bonus"
+
+# check shell that executed the script
+shell_name=$(ps -p $$ -o command | tail -1 | awk '{print $1}')
+slashes=$(($(echo $shell_name | tr -cd / | wc -c | awk '{print $1}') + 1))
+shell_name=$(echo $shell_name | cut -d/ -f $slashes)
+
+# set colors
+if [ $shell_name = "sh" ] || [ $shell_name = "zsh" ]
+then
+	BLUE="\033[38;5;21m"
+	CYAN="\033[38;5;81m"
+	GREEN="\033[38;5;40m"
+	ORANGE="\033[38;5;202m"
+	PURPLE="\033[38;5;105m"
+	RED="\033[38;5;124m"
+	WHITE="\033[38;5;231m"
+	YELLOW="\033[38;5;226m"
+	RESET="\033[0m"
+	MC="\033[37m"
+else
+	BLUE=""
+	CYAN=""
+	GREEN=""
+	ORANGE=""
+	PURPLE=""
+	RED=""
+	WHITE=""
+	YELLOW=""
+	RESET=""
+	MC=""
+fi
+
+case $1 in
+	-h|--help)
+		echo "help"
+	;;
+	m)
+		shift
+		if ! [ $# -eq 0 ]
+		then
+			echo "'m' option doesn't expect any arguments"
+			exit 1
+		fi
+		ft_check_executables 0
+		ft_mandatory
+	;;
+	b)
+		shift
+		if ! [ $# -eq 0 ]
+		then
+			echo "'b' option doesn't expect any arguments"
+			exit 1
+		fi
+		ft_check_executables 1
+		ft_bonus
+	;;
+	a)
+		shift
+		if ! [ $# -eq 0 ]
+		then
+			echo "'a' option doesn't expect any arguments"
+			exit 1
+		fi
+		ft_check_executables 1
+		ft_mandatory
+		ft_bonus
+	;;
+	"")
+		echo "void"
+	;;
+	*)
+		echo "error"
+	;;
+esac
