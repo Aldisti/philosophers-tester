@@ -1,3 +1,8 @@
+# Aldisti
+log*
+*.swp
+.DStore
+
 # Prerequisites
 *.d
 

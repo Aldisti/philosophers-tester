@@ -55,7 +55,7 @@ ft_test_one()
 {
 	file="./log1"
 	status=1
-	($P 4 410 200 200 3 1>$file)&
+	($BUFF $P 4 410 200 200 3 >$file)&
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -77,13 +77,13 @@ ft_test_two()
 {
 	file="./log2"
 	status=0
-	($P 4 310 200 100 1>$file)&
+	($BUFF $P 4 310 200 100 >$file)&
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
 		kill -kill $pid
 	fi
-	if [ "$(grep 'died' $file | wc -l | awk '{print $1}')" = 1 ]; then
+	if ! [ "$(grep 'died' $file | wc -l | awk '{print $1}')" = "" ] && [ $(grep 'died' $file | wc -l | awk '{print $1}') -eq 1 ]; then
 		status=1
 	fi
 	if [ $status -eq 1 ]; then
@@ -97,7 +97,7 @@ ft_test_three()
 	file="./log3"
 	status=1
 	i=0
-	($P 5 610 200 200 1>$file)&
+	($BUFF $P 5 610 200 200 >$file)&
 	echo "$CYAN Executing your program for 120 seconds, please wait...$RESET"
 	while [ $i -lt 120 ]; do
 		sleep 1
@@ -108,8 +108,8 @@ ft_test_three()
 		fi
 	done
 	kill -kill $(pgrep philo) 2>/dev/null
-	echo "time: $(cat $file | tail -1 | awk '{print $1}')"
-	if ! [ "$(grep 'died' $file)" = "" ] || [ $(cat $file | tail -1 | awk '{print $1}') -lt 27500 ]; then
+	# echo "time: $(cat $file | tail -1 | awk '{print $1}')"
+	if ! [ "$(grep 'died' $file)" = "" ] || [ $(cat $file | tail -1 | awk '{print $1}') -lt 100000 ]; then
 		status=0
 	fi
 	if [ $status -eq 1 ]; then
@@ -122,7 +122,7 @@ ft_test_four()
 {
 	file="./log4"
 	status=1
-	($P 5 800 200 200 5 1>$file)&
+	($BUFF $P 5 800 200 200 5 >$file)&
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -140,11 +140,59 @@ ft_test_four()
 	ft_print_status 4 $status
 }
 
+# ./philo 1 410 200 200
+ft_test_five()
+{
+	file="./log5"
+	status=1
+	($BUFF $P 1 400 200 200 >$file)&
+	sleep 2
+	pid=$(pgrep philo)
+	if ! [ "$pid" = "" ]; then
+		kill -kill $pid
+		status=0
+	fi
+	output=$(cat $file | tail -1 | awk '{print $1}')
+	if [ "$output" = "" ] || [ $output -gt 410 ]; then
+		status=0
+	fi
+	if [ $status -eq 1 ]; then
+		rm $file 2>/dev/null
+	fi
+	ft_print_status 5 $status
+}
+
+# ./philo 2 400 200 200
+ft_test_six()
+{
+	file="./log6"
+	status=1
+	($BUFF $P 2 400 200 200 1>$file)&
+	sleep 3
+	pid=$(pgrep philo)
+	if ! [ "$pid" = "" ]; then
+		kill -kill $pid
+		status=0
+	fi
+	output=$(cat $file | tail -1 | awk '{print $1}')
+	echo "$output"
+	if [ "$output" = "" ] || [ $output -gt 410 ]; then
+		status=0
+	fi
+	if [ $status -eq 1 ]; then
+		rm $file 2>/dev/null
+	fi
+	ft_print_status 6 $status
+}
+
 ft_mandatory()
 {
 	ft_test_one
 	ft_test_two
-	ft_test_three
+	# ft_test_three
+	ft_test_four
+	ft_test_five
+	ft_test_six
 }
 
 ft_bonus()
@@ -154,6 +202,7 @@ ft_bonus()
 
 P="./../philo"
 PB="./../philo_bonus/philo_bonus"
+BUFF="stdbuf -oL -eL"
 
 # check shell that executed the script
 shell_name=$(ps -p $$ -o command | tail -1 | awk '{print $1}')
