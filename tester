@@ -1,4 +1,8 @@
 #!/bin/sh
+# this is the path to the mandatory philo executable
+P="./../philo/philo"
+# this is the path to the bonus philo executable
+PB="./../philo_bonus/philo_bonus"
 
 ft_check_executables()
 {
@@ -310,10 +314,8 @@ ft_all()
 	ft_test_nine $1
 }
 
-P="./../philo/philo"
-PB="./../philo_bonus/philo_bonus"
-BUFF="stdbuf -oL -eL"
 
+BUFF="stdbuf -oL -eL"
 # check shell that executed the script
 shell_name=$(ps -p $$ -o command | tail -1 | awk '{print $1}')
 slashes=$(($(echo $shell_name | tr -cd / | wc -c | awk '{print $1}') + 1))
