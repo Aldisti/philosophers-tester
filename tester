@@ -5,35 +5,35 @@ ft_check_executables()
 	# check executables existence
 	if ! [ -e $P ]
 	then
-		echo "'$P' executable not found"
-		echo "Try with 'make -C ../philo'"
+		printf "'$P' executable not found\n"
+		printf "Try with 'make -C ../philo'"
 		exit 1
 	elif [ $1 -eq 1 ] && ! [ -e $PB ]
 	then
-		echo "'$PB' executable not found"
-		echo "Try with 'make -C ../philo_bonus'"
+		printf "'$PB' executable not found\n"
+		printf "Try with 'make -C ../philo_bonus'\n"
 		exit 1
 	fi
 	# check executables permissions
 	if [ "$(uname)" = "Linux" ] && ! [ $(stat -c %A $P | tr -cd x | wc -c) -eq 3 ]
 	then
-		echo "'$P' executable must have execution permissions"
-		echo "Try with 'chmod +x $P'"
+		printf "'$P' executable must have execution permissions\n"
+		printf "Try with 'chmod +x $P'\n"
 		exit 1
 	elif [ $1 -eq 1 ] && [ "$(uname)" = "Linux" ] && ! [ $(stat -c %A $PB | tr -cd x | wc -c) -eq 3 ]
 	then
-		echo "'$PB' executable must have execution permissions"
-		echo "Try with 'chmod +x $PB'"
+		printf "'$PB' executable must have execution permissions\n"
+		printf "Try with 'chmod +x $PB'\n"
 		exit 1
 	elif ! [ "$(uname)" = "Linux" ] && ! [ $(stat $P | awk '{print $3}' | tr -cd x | wc -c) -eq 3 ]
 	then
-		echo "'$P' executable must have execution permissions"
-		echo "Try with 'chmod +x $P'"
+		printf "'$P' executable must have execution permissions\n"
+		printf "Try with 'chmod +x $P'\n"
 		exit 1
 	elif [ $1 -eq 1 ] && ! [ "$(uname)" = "Linux" ] && ! [ $(stat $PB | awk '{print $3}' | tr -cd x | wc -c) -eq 3 ]
 	then
-		echo "'$PB' executable must have execution permissions"
-		echo "Try with 'chmod +x $PB'"
+		printf "'$PB' executable must have execution permissions\n"
+		printf "Try with 'chmod +x $PB'\n"
 		exit 1
 	fi
 }
@@ -43,19 +43,22 @@ ft_check_executables()
 ft_print_status()
 {
 	if [ $2 -eq 1 ]; then
-		echo "$PURPLE TEST $1:$GREEN Success!$RESET"
-	elif [ $2 -eq 0 ]; then
-		echo "$PURPLE TEST $1:$RED Fail!$RESET"
+		printf "$PURPLE TEST $1:$GREEN Success!$RESET\n"
+	elif [ $2 -eq 0 ] && [ $1 -lt 7 ]; then
+		printf "$PURPLE TEST $1:$RED Fail!$RESET\n"
+	elif [ $2 -eq 0 ] && [ $1 -gt 6 ]; then
+		printf "$PURPLE TEST $1:$YELLOW Fail!$RESET\n"
 	else
-		echo "Error at ft_print_status with [$1] [$2] as input"
+		printf "Error at ft_print_status with [$1] [$2] as input\n"
 	fi
 }
 
+# ./philo 4 410 200 200 3
 ft_test_one()
 {
 	file="./log1"
 	status=1
-	($BUFF $P 4 410 200 200 3 >$file)&
+	($BUFF $1 4 410 200 200 3 >$file)&
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -73,11 +76,12 @@ ft_test_one()
 	ft_print_status 1 $status
 }
 
+# ./philo 4 310 200 100
 ft_test_two()
 {
 	file="./log2"
 	status=0
-	($BUFF $P 4 310 200 100 >$file)&
+	($BUFF $1 4 310 200 100 >$file)&
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -92,14 +96,15 @@ ft_test_two()
 	ft_print_status 2 $status
 }
 
+# ./philo 5 610 200 200
 ft_test_three()
 {
 	file="./log3"
 	status=1
 	i=0
-	($BUFF $P 5 610 200 200 >$file)&
-	echo "$CYAN Executing your program for 120 seconds, please wait...$RESET"
+	($BUFF $1 5 610 200 200 >$file)&
 	while [ $i -lt 120 ]; do
+		printf "\033[1K\r$CYAN Executing your program for$PURPLE %d$CYAN seconds, please wait...$RESET" $((120 - i))
 		sleep 1
 		i=$((i + 1))
 		if [ "$(pgrep philo)" = "" ]; then
@@ -107,8 +112,9 @@ ft_test_three()
 			break
 		fi
 	done
+	printf "\033[1K\r"
 	kill -kill $(pgrep philo) 2>/dev/null
-	# echo "time: $(cat $file | tail -1 | awk '{print $1}')"
+	# printf "time: $(cat $file | tail -1 | awk '{print $1}')"
 	if ! [ "$(grep 'died' $file)" = "" ] || [ $(cat $file | tail -1 | awk '{print $1}') -lt 100000 ]; then
 		status=0
 	fi
@@ -118,11 +124,12 @@ ft_test_three()
 	ft_print_status 3 $status
 }
 
+# ./philo 5 800 200 200 5
 ft_test_four()
 {
 	file="./log4"
 	status=1
-	($BUFF $P 5 800 200 200 5 >$file)&
+	($BUFF $1 5 800 200 200 5 >$file)&
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -145,7 +152,7 @@ ft_test_five()
 {
 	file="./log5"
 	status=1
-	($BUFF $P 1 400 200 200 >$file)&
+	($BUFF $1 1 400 200 200 >$file)&
 	sleep 2
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -167,7 +174,7 @@ ft_test_six()
 {
 	file="./log6"
 	status=1
-	($BUFF $P 2 400 200 200 1>$file)&
+	($BUFF $1 2 400 200 200 1>$file)&
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -175,8 +182,7 @@ ft_test_six()
 		status=0
 	fi
 	output=$(cat $file | tail -1 | awk '{print $1}')
-	echo "$output"
-	if [ "$output" = "" ] || [ $output -gt 410 ]; then
+	if [ "$output" = "" ] || [ $output -gt 410 ] || ! [ "$(cat $file | tail -1 | awk '{print $3}')" = "died" ]; then
 		status=0
 	fi
 	if [ $status -eq 1 ]; then
@@ -185,22 +191,126 @@ ft_test_six()
 	ft_print_status 6 $status
 }
 
-ft_mandatory()
+# ./philo 16 410 200 200
+ft_test_seven()
 {
-	ft_test_one
-	ft_test_two
-	# ft_test_three
-	ft_test_four
-	ft_test_five
-	ft_test_six
+	file="./log7"
+	status=1
+	i=0
+	($BUFF $1 16 410 200 200 1>$file)&
+	while [ $i -lt 120 ]; do
+		printf "\033[1K\r$CYAN Executing your program for$PURPLE %d$CYAN seconds, please wait...$RESET" $((120 - i))
+		sleep 1
+		i=$((i + 1))
+		if [ "$(pgrep philo)" = "" ]; then
+			status=0
+			break
+		fi
+	done
+	printf "\033[1K\r"
+	kill -kill $(pgrep philo) 2>/dev/null
+	if ! [ "$(grep 'died' $file)" = "" ] || [ $(cat $file | tail -1 | awk '{print $1}') -lt 100000 ]; then
+		status=0
+	fi
+	if [ $status -eq 1 ]; then
+		rm $file 2>/dev/null
+	fi
+	ft_print_status 7 $status
 }
 
-ft_bonus()
+# ./philo 50 410 200 200
+ft_test_eight()
 {
-	echo "do bonus"
+	file="./log8"
+	status=1
+	i=0
+	($BUFF $1 50 410 200 200 1>$file)&
+	while [ $i -lt 120 ]; do
+		printf "\033[1K\r$CYAN Executing your program for$PURPLE %d$CYAN seconds, please wait...$RESET" $((120 - i))
+		sleep 1
+		i=$((i + 1))
+		if [ "$(pgrep philo)" = "" ]; then
+			status=0
+			break
+		fi
+	done
+	printf "\033[1K\r"
+	kill -kill $(pgrep philo) 2>/dev/null
+	if ! [ "$(grep 'died' $file)" = "" ] || [ $(cat $file | tail -1 | awk '{print $1}') -lt 100000 ]; then
+		status=0
+	fi
+	if [ $status -eq 1 ]; then
+		rm $file 2>/dev/null
+	fi
+	ft_print_status 8 $status
 }
 
-P="./../philo"
+# ./philo 100 410 200 200
+ft_test_nine()
+{
+	file="./log9"
+	status=1
+	i=0
+	($BUFF $1 100 410 200 200 1>$file)&
+	while [ $i -lt 120 ]; do
+		printf "\033[1K\r$CYAN Executing your program for$PURPLE %d$CYAN seconds, please wait...$RESET" $((120 - i))
+		sleep 1
+		i=$((i + 1))
+		if [ "$(pgrep philo)" = "" ]; then
+			status=0
+			break
+		fi
+	done
+	printf "\033[1K\r"
+	kill -kill $(pgrep philo) 2>/dev/null
+	if ! [ "$(grep 'died' $file)" = "" ] || [ $(cat $file | tail -1 | awk '{print $1}') -lt 100000 ]; then
+		status=0
+	fi
+	if [ $status -eq 1 ]; then
+		rm $file 2>/dev/null
+	fi
+	ft_print_status 9 $status
+}
+
+ft_do_specific()
+{
+	case $1 in
+		1) ft_test_one $2 ;;
+		2) ft_test_two $2 ;;
+		3) ft_test_three $2 ;;
+		4) ft_test_four $2 ;;
+		5) ft_test_five $2 ;;
+		6) ft_test_six $2 ;;
+		7) ft_test_seven $2 ;;
+		8) ft_test_eight $2 ;;
+		9) ft_test_nine $2 ;;
+		*)
+			printf "Invalid number try in range 1-9\n"
+			exit 1
+		;;
+	esac
+}
+
+ft_all()
+{
+	if [ "$1" = "$P" ]; then
+		printf "$CYAN Testing mandatory part...$RESET\n"
+	else
+		printf "$CYAN Testing bonus part$RESET\n"
+	fi
+	ft_test_one $1
+	ft_test_two $1
+	ft_test_three $1
+	ft_test_four $1
+	ft_test_five $1
+	ft_test_six $1
+	printf "$CYAN This tests are with 16, 50 and 100 philos$RESET\n"
+	ft_test_seven $1
+	ft_test_eight $1
+	ft_test_nine $1
+}
+
+P="./../philo/philo"
 PB="./../philo_bonus/philo_bonus"
 BUFF="stdbuf -oL -eL"
 
@@ -237,43 +347,60 @@ fi
 
 case $1 in
 	-h|--help)
-		echo "help"
+		printf "help\n"
+		exit 0
 	;;
 	m)
 		shift
-		if ! [ $# -eq 0 ]
-		then
-			echo "'m' option doesn't expect any arguments"
+		ft_check_executables 0
+		if [ $# -eq 0 ]; then
+			ft_all $P
+		elif [ $# -eq 1 ]; then
+			ft_do_specific $1 $P
+		else
+			printf "'m' option expects one or zero arguments\n"
 			exit 1
 		fi
-		ft_check_executables 0
-		ft_mandatory
+		exit 0
 	;;
 	b)
 		shift
-		if ! [ $# -eq 0 ]
-		then
-			echo "'b' option doesn't expect any arguments"
+		ft_check_executables 1
+		if [ $# -eq 0 ]; then
+			ft_all $PB
+		elif [ $# -eq 1 ]; then
+			ft_do_specific $1 $PB
+		else
+			printf "'b' option expects one or zero arguments\n"
 			exit 1
 		fi
-		ft_check_executables 1
-		ft_bonus
+		exit 0
 	;;
 	a)
 		shift
-		if ! [ $# -eq 0 ]
-		then
-			echo "'a' option doesn't expect any arguments"
+		ft_check_executables 1
+		if ! [ $# -eq 0 ]; then
+			printf "'a' option doesn't expect any argument\n"
 			exit 1
 		fi
-		ft_check_executables 1
-		ft_mandatory
-		ft_bonus
+		ft_all $P
+		ft_all $PB
+		exit 0
+	;;
+	c)
+		shift
+		if ! [ $# -eq 0 ]; then
+			printf "'c' option doesn't expect any argument\n"
+			exit 1
+		fi
+		rm -rf ./log*
 	;;
 	"")
-		echo "void"
+		printf "void\n"
+		exit 1
 	;;
 	*)
-		echo "error"
+		printf "error\n"
+		exit 1
 	;;
 esac
