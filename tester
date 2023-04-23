@@ -1,6 +1,6 @@
 #!/bin/sh
 # this is the path to the mandatory philo executable
-P="../philo/philo"
+P="../philo"
 # this is the path to the bonus philo executable
 PB="../philo_bonus/philo_bonus"
 
@@ -10,7 +10,7 @@ ft_check_executables()
 	if ! [ -e $P ]
 	then
 		printf "'$P' executable not found\n"
-		printf "Try with 'make -C ../philo'"
+		printf "Try with 'make -C ../philo'\n"
 		exit 1
 	elif [ $1 -eq 1 ] && ! [ -e $PB ]
 	then
@@ -348,11 +348,34 @@ else
 fi
 
 case $1 in
-	-h|--help)
-		printf "help\n"
+	h|-h)
+		echo "PHILOSOPHERS TESTER"
+		echo "This is a simple shell script to test your 42 project"
+		echo ""
+		echo "OPTIONS"
+		echo "m, -m	 checks for the mandatory part"
+		echo "       [1-9]	executes only that test"
+		echo "b, -b	 checks for the bonus part"
+		echo "       [1-9]	executes only that test"
+		echo "a, -a	 checks for both, mandatory and bonus part"
+		echo "c, -c	 removes all the log files"
+		echo "e, -e	 changes the paths to the executables"
+		echo "       reset		resets the paths to they original"
+		echo "       m [new_path]	changes only the path to the mandatory executable"
+		echo "       b [new_path]	changes only the path to the bonus executable"
+		echo "h, -h	 displays this help page"
+		echo ""
+		echo "OUTPUT"
+		echo "A positive result will be like this:"
+		echo "$PURPLE TEST 1:$GREEN Success!$RESET"
+		echo "A negative result will be like this:"
+		echo "$PURPLE TEST 1:$RED Fail!$RESET"
+		echo "The 'Fail!' message colored by$YELLOW yellow$RESET means that you"
+		echo "push the project with that test failed, but trust me, there's always"
+		echo "a way to upgrade your code."
 		exit 0
 	;;
-	m)
+	m|-m)
 		shift
 		ft_check_executables 0
 		if [ $# -eq 0 ]; then
@@ -365,7 +388,7 @@ case $1 in
 		fi
 		exit 0
 	;;
-	b)
+	b|-b)
 		shift
 		ft_check_executables 1
 		if [ $# -eq 0 ]; then
@@ -378,7 +401,7 @@ case $1 in
 		fi
 		exit 0
 	;;
-	a)
+	a|-a)
 		shift
 		ft_check_executables 1
 		if ! [ $# -eq 0 ]; then
@@ -389,7 +412,7 @@ case $1 in
 		ft_all $PB
 		exit 0
 	;;
-	c)
+	c|-c)
 		shift
 		if ! [ $# -eq 0 ]; then
 			printf "'c' option doesn't expect any argument\n"
@@ -397,7 +420,7 @@ case $1 in
 		fi
 		rm -rf ./log*
 	;;
-	e)
+	e|-e)
 		shift
 		if [ $# -lt 1 ] || [ $# -gt 2 ]; then
 			printf "'e' option expects one or two arguments\n"
@@ -440,11 +463,12 @@ case $1 in
 		fi
 	;;
 	"")
-		printf "void\n"
+		printf "Try with './tester --help'"
 		exit 1
 	;;
 	*)
-		printf "error\n"
+		printf "'$1' invalid option\n"
+		printf "Try with './tester --help'"
 		exit 1
 	;;
 esac
