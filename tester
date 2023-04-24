@@ -1,6 +1,6 @@
 #!/bin/sh
 # this is the path to the mandatory philo executable
-P="../philo"
+P="../philo/philo"
 # this is the path to the bonus philo executable
 PB="../philo_bonus/philo_bonus"
 
