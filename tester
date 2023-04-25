@@ -1,6 +1,6 @@
 #!/bin/sh
 # this is the path to the mandatory philo executable
-P="../philo"
+P="../philo/philo"
 # this is the path to the bonus philo executable
 PB="../philo_bonus/philo_bonus"
 
@@ -48,7 +48,7 @@ ft_print_status()
 {
 	if [ $2 -eq 1 ]; then
 		printf "$PURPLE TEST $1:$GREEN Success!$RESET\n"
-	elif [ $(echo "abcdefgh" | tr -cd $2 | wc -c) -gt 0 ]; then
+	elif [ $(echo "abcdefgh" | tr -cd "$1" | wc -c) -gt 0 ]; then
 		printf "$PURPLE TEST $1:$RED Fail!$RESET\n"
 	elif [ $2 -eq 0 ] && [ $1 -lt 7 ]; then
 		printf "$PURPLE TEST $1:$RED Fail!$RESET\n"
@@ -71,7 +71,7 @@ ft_test_a()
 		kill -kill $(pgrep philo) 2>/dev/null
 	elif [ $(cat $file | grep "fault" | wc -l | awk '{print $1}') -gt 0 ]; then
 		status=0
-	elif [ $(cat $file | grep "Error" | wc -l | awk '{print $1}') -gt 0 ]; then
+	elif [ $(cat $file | grep "rror" | wc -l | awk '{print $1}') -gt 0 ]; then
 		status=1
 	elif [ $(cat $file | wc -l | awk '{print $1}') -gt 2 ]; then
 		status=0
@@ -524,14 +524,11 @@ ft_all()
 	ft_test_nine $1
 }
 
-
-if ! [ "$(which stdbuf)" = "" ]; then
+stdbuf echo ciao >/dev/null 2>/dev/null
+if [ $? -eq 0 ]; then
 	BUFF="stdbuf -oL -eL"
-elif ! [ "$(which stdbuf)" = "" ] && ! [ "$(uname)" = "Linux" ]; then
-	BUFF=""
 else
-	printf "An error occurred\nTry to install the 'stdbuf' function\n"
-	exit 1
+	BUFF=""
 fi
 
 # check shell that executed the script
