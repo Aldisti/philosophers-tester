@@ -62,7 +62,7 @@ ft_test_one()
 {
 	file="./log1"
 	status=1
-	($BUFF $1 4 410 200 200 3 >$file)&
+	$($BUFF $1 4 410 200 200 3 >$file &)
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -85,7 +85,7 @@ ft_test_two()
 {
 	file="./log2"
 	status=0
-	($BUFF $1 4 310 200 100 >$file)&
+	$($BUFF $1 4 310 200 100 >$file &)
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -106,7 +106,7 @@ ft_test_three()
 	file="./log3"
 	status=1
 	i=0
-	($BUFF $1 5 610 200 200 >$file)&
+	$($BUFF $1 5 610 200 200 >$file &)
 	while [ $i -lt 120 ]; do
 		printf "\033[1K\r$CYAN Executing your program for$PURPLE %d$CYAN seconds, please wait...$RESET" $((120 - i))
 		sleep 1
@@ -133,7 +133,7 @@ ft_test_four()
 {
 	file="./log4"
 	status=1
-	($BUFF $1 5 800 200 200 5 >$file)&
+	$($BUFF $1 5 800 200 200 5 >$file &)
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -156,7 +156,7 @@ ft_test_five()
 {
 	file="./log5"
 	status=1
-	($BUFF $1 1 400 200 200 >$file)&
+	$($BUFF $1 1 400 200 200 >$file &)
 	sleep 2
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -178,7 +178,7 @@ ft_test_six()
 {
 	file="./log6"
 	status=1
-	($BUFF $1 2 400 200 200 1>$file)&
+	$($BUFF $1 2 400 200 200 1>$file &)
 	sleep 3
 	pid=$(pgrep philo)
 	if ! [ "$pid" = "" ]; then
@@ -201,7 +201,7 @@ ft_test_seven()
 	file="./log7"
 	status=1
 	i=0
-	($BUFF $1 16 410 200 200 1>$file)&
+	$($BUFF $1 16 410 200 200 1>$file &)
 	while [ $i -lt 120 ]; do
 		printf "\033[1K\r$CYAN Executing your program for$PURPLE %d$CYAN seconds, please wait...$RESET" $((120 - i))
 		sleep 1
@@ -228,7 +228,7 @@ ft_test_eight()
 	file="./log8"
 	status=1
 	i=0
-	($BUFF $1 50 410 200 200 1>$file)&
+	$($BUFF $1 50 410 200 200 1>$file &)
 	while [ $i -lt 120 ]; do
 		printf "\033[1K\r$CYAN Executing your program for$PURPLE %d$CYAN seconds, please wait...$RESET" $((120 - i))
 		sleep 1
@@ -255,7 +255,7 @@ ft_test_nine()
 	file="./log9"
 	status=1
 	i=0
-	($BUFF $1 100 410 200 200 1>$file)&
+	$($BUFF $1 100 410 200 200 1>$file &)
 	while [ $i -lt 120 ]; do
 		printf "\033[1K\r$CYAN Executing your program for$PURPLE %d$CYAN seconds, please wait...$RESET" $((120 - i))
 		sleep 1
@@ -308,14 +308,20 @@ ft_all()
 	ft_test_four $1
 	ft_test_five $1
 	ft_test_six $1
-	printf "$CYAN This tests are with 16, 50 and 100 philos$RESET\n"
+	printf "$CYAN And now, some stress tests...$RESET\n"
 	ft_test_seven $1
 	ft_test_eight $1
 	ft_test_nine $1
 }
 
-
 BUFF="stdbuf -oL -eL"
+$BUFF echo ciao > /dev/null 2>&1
+if ! [ $? -eq 0 ] && ! [ "$(uname)" = "Linux" ]; then
+	BUFF=""
+else
+	printf "An error occurred\nTry to install the 'stdbuf' function\n"
+	exit 1
+fi
 # check shell that executed the script
 shell_name=$(ps -p $$ -o command | tail -1 | awk '{print $1}')
 slashes=$(($(echo $shell_name | tr -cd / | wc -c | awk '{print $1}') + 1))
@@ -463,12 +469,12 @@ case $1 in
 		fi
 	;;
 	"")
-		printf "Try with './tester --help'"
+		printf "Try with './tester --help'\n"
 		exit 1
 	;;
 	*)
 		printf "'$1' invalid option\n"
-		printf "Try with './tester --help'"
+		printf "Try with './tester --help'\n"
 		exit 1
 	;;
 esac
