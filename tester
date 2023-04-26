@@ -64,7 +64,7 @@ ft_test_a()
 {
 	file="./loga"
 	status=1
-	$($BUFF $1 >$file &)
+	$($BUFF $1 >$file 2>&1 &)
 	sleep 1
 	if ! [ "$(pgrep philo)" = "" ]; then
 		status=0
@@ -87,7 +87,7 @@ ft_test_b()
 {
 	file="./logb"
 	status=1
-	$($BUFF $1 4 410 200 >$file &)
+	$($BUFF $1 4 410 200 >$file 2>&1 &)
 	sleep 1
 	if ! [ "$(pgrep philo)" = "" ]; then
 		status=0
@@ -110,7 +110,7 @@ ft_test_c()
 {
 	file="./logc"
 	status=1
-	$($BUFF $1 4 410 200 200 3 1 >$file &)
+	$($BUFF $1 4 410 200 200 3 1 >$file 2>&1 &)
 	sleep 1
 	if ! [ "$(pgrep philo)" = "" ]; then
 		status=0
@@ -133,7 +133,7 @@ ft_test_d()
 {
 	file="./logd"
 	status=1
-	$($BUFF $1 a 410 200 200 >$file &)
+	$($BUFF $1 a 410 200 200 >$file 2>&1 &)
 	sleep 1
 	if ! [ "$(pgrep philo)" = "" ]; then
 		status=0
@@ -156,7 +156,7 @@ ft_test_e()
 {
 	file="./loge"
 	status=1
-	$($BUFF $1 4 410 200 200 a >$file &)
+	$($BUFF $1 4 410 200 200 a >$file 2>&1 &)
 	sleep 1
 	if ! [ "$(pgrep philo)" = "" ]; then
 		status=0
@@ -179,7 +179,7 @@ ft_test_f()
 {
 	file="./logf"
 	status=1
-	$($BUFF $1 -4 410 200 200 >$file &)
+	$($BUFF $1 -4 410 200 200 >$file 2>&1 &)
 	sleep 1
 	if ! [ "$(pgrep philo)" = "" ]; then
 		status=0
@@ -202,7 +202,7 @@ ft_test_g()
 {
 	file="./logg"
 	status=1
-	$($BUFF $1 4 410 -200 200 >$file &)
+	$($BUFF $1 4 410 -200 200 >$file 2>&1 &)
 	sleep 1
 	if ! [ "$(pgrep philo)" = "" ]; then
 		status=0
@@ -225,7 +225,7 @@ ft_test_h()
 {
 	file="./logh"
 	status=1
-	$($BUFF $1 4 410 200 200 -3 >$file &)
+	$($BUFF $1 4 410 200 200 -3 >$file 2>&1 &)
 	sleep 1
 	if ! [ "$(pgrep philo)" = "" ]; then
 		status=0
