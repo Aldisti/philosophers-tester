@@ -559,7 +559,7 @@ else
 fi
 
 case $1 in
-	h|-h)
+	h|-h|--help)
 		echo "PHILOSOPHERS TESTER"
 		echo "This is a simple shell script to test your 42 project"
 		echo ""
@@ -574,7 +574,7 @@ case $1 in
 		echo "       reset		resets the paths to they original"
 		echo "       m [new_path]	changes only the path to the mandatory executable"
 		echo "       b [new_path]	changes only the path to the bonus executable"
-		echo "h, -h	 displays this help page"
+		echo "h, -h, --help	 displays this help page"
 		echo ""
 		echo "OUTPUT"
 		echo "A positive result will be like this:"
